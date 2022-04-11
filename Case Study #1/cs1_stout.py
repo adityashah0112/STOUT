@@ -244,7 +244,6 @@ j_loan_ds.info()
 
 j_loan_ds = pd.get_dummies(j_loan_ds)
 j_new_cols = list(set(j_loan_ds.columns)-(set(cat_cols).union(set(num_cols))))
-print(j_new_cols)
 
 """Two training subsets are created, one for only the categorical values and one containing both numerical and categorical values. This is done in response to the poor correlations seen in the correlation with interest rates of numerical values in the dataset.
 * Train subset 1 consists of all the columns
@@ -273,13 +272,13 @@ r2_score(j_loan_ds['interest_rate'], pred1_j)
 
 from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
-train2_j = sc.fit_transform(train2_j)
+t2_j = sc.fit_transform(train2_j)
 lm2 = LinearRegression()
 reg2 = lm2.fit(
-    train2_j,
+    t2_j,
     j_loan_ds['interest_rate']
 )
-pred2_j = reg2.predict(train2_j)
+pred2_j = reg2.predict(t2_j)
 
 r2_score(j_loan_ds['interest_rate'], pred2_j)
 
@@ -290,15 +289,23 @@ import statsmodels.api as sm
 X = train1_j.astype(float)
 X = sm.add_constant(X)
 y = j_loan_ds['interest_rate']
-mdl = sm.OLS(y, X)
-reg_sm = mdl.fit()
-reg_sm.summary()
+mdl1 = sm.OLS(y, X)
+reg_sm1 = mdl1.fit()
+p_val_j1 = pd.DataFrame(reg_sm1.pvalues, columns=['p-value'])
 
-X = train2_j.astype(float)
-X = sm.add_constant(X)
-mdl2 = sm.OLS(y, X)
+p_val_j1.sort_values('p-value').head(20).index
+
+# This shows the top 20 features that are most impactful for predicting interest_rate
+
+X2 = train2_j.astype(float)
+X2 = sm.add_constant(X2)
+mdl2 = sm.OLS(y, X2)
 reg_sm2 = mdl2.fit()
-reg_sm2.summary()
+p_val_j2 = pd.DataFrame(reg_sm2.pvalues, columns=['p-value'])
+
+p_val_j2.sort_values('p-value').head(20).index
+
+# This shows the top 20 features that are most impactful for predicting interest_rate
 
 """Since there are multiple classes in some of the variables, it is difficult to interpret the result of the whole model at once, hence regressinon over a set of variables is a good way to go forward.
 
@@ -330,11 +337,7 @@ i_loan_ds.info()
 """### Creating dummy variables for analysis in regression model"""
 
 i_loan_ds = pd.get_dummies(i_loan_ds)
-i_new_cols = list(set(i_loan_ds.columns)-(set(cat_cols).union(set(num_cols_i))))
-print(i_new_cols)
-
-i_loan_ds = pd.get_dummies(i_loan_ds)
-i_new_cols = list(set(i_loan_ds.columns)-(set(cat_cols).union(set(num_cols))))
+i_new_cols = list(set(i_loan_ds.columns)-(set(cat_cols_i).union(set(num_cols_i))))
 print(i_new_cols)
 
 """Two training subsets are created, one for only the categorical values and one containing both numerical and categorical values. This is done in response to the poor correlations seen in the correlation with interest rates of numerical values in the dataset.
@@ -364,13 +367,13 @@ r2_score(i_loan_ds['interest_rate'], pred1_i)
 
 from sklearn.preprocessing import StandardScaler
 sc = StandardScaler()
-train2_i = sc.fit_transform(train2_i)
+t2_i = sc.fit_transform(train2_i)
 lm2 = LinearRegression()
 reg2 = lm2.fit(
-    train2_i,
+    t2_i,
     i_loan_ds['interest_rate']
 )
-pred2_i = reg2.predict(train2_i)
+pred2_i = reg2.predict(t2_i)
 
 r2_score(i_loan_ds['interest_rate'], pred2_i)
 
@@ -379,16 +382,24 @@ r2_score(i_loan_ds['interest_rate'], pred2_i)
 X = train1_i.astype(float)
 X = sm.add_constant(X)
 y = i_loan_ds['interest_rate']
-mdl3 = sm.OLS(y, X)
-reg_sm3 = mdl3.fit()
-reg_sm3.summary()
+mdl1 = sm.OLS(y, X)
+reg_sm1 = mdl1.fit()
+p_val_i1 = pd.DataFrame(reg_sm1.pvalues, columns=['p-value'])
 
-X = train2_i
-X = sm.add_constant(X)
+p_val_i1.sort_values('p-value').head(20).index
+
+# This shows the top 20 features that are most impactful for predicting interest_rate
+
+X2 = train2_i
+X2 = sm.add_constant(X2)
 y = i_loan_ds['interest_rate']
-mdl4 = sm.OLS(y, X)
-reg_sm4 = mdl4.fit()
-reg_sm4.summary()
+mdl2 = sm.OLS(y, X2)
+reg_sm2 = mdl2.fit()
+p_val_i2 = pd.DataFrame(reg_sm2.pvalues, columns=['p-value'])
+
+p_val_i2.sort_values('p-value').head(20).index
+
+# This shows the top 20 features that are most impactful for predicting interest_rate
 
 """# Results
 
